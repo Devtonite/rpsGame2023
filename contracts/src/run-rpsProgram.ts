@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Field, UInt32, isReady, shutdown } from 'snarkyjs';
 import { tic, toc } from './tictoc.js';
-import { rpsProgram, rpsState } from './rpsProgram.js';
+import { hashRpsState, rpsProgram, rpsState } from './rpsProgram.js';
 
 async function main() {
   tic('SnarkyJs Loading');
@@ -12,7 +12,7 @@ async function main() {
   await rpsProgram.compile();
   toc();
 
-  let initGameState = new rpsState({
+  let validGameState = new rpsState({
     player1Choice: Field(-1),
     player2Choice: Field(-1),
     result: Field(-1),
@@ -20,10 +20,31 @@ async function main() {
     player2Score: UInt32.from(0),
     bestOf: UInt32.from(3),
   });
+  let hashInitGameState = hashRpsState(validGameState);
+
+  let myGameState = new rpsState({
+    player1Choice: Field(-1),
+    player2Choice: Field(-1),
+    result: Field(-1),
+    player1Score: UInt32.from(0),
+    player2Score: UInt32.from(0),
+    bestOf: UInt32.from(3),
+  });
+  let hashMyGameState = hashRpsState(myGameState);
 
   // Initialize Game State PROOF
-  tic('proof0');
-  const proof0 = await rpsProgram.initState(initGameState);
+  tic('proof with Hash');
+  const proof1 = await rpsProgram.checkWithHash(
+    hashInitGameState,
+    hashMyGameState
+  );
+  toc();
+
+  tic('proof with State');
+  const proof2 = await rpsProgram.checkWithState(
+    hashInitGameState,
+    myGameState
+  );
   toc();
 
   //send this proof to player to start game:

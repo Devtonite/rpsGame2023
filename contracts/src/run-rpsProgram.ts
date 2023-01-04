@@ -20,15 +20,15 @@ async function main() {
   // 1. p1 chooses rock:
 
   // private inputs
-  const myP1Move = Field(1);
   const myP1Secret = Field(24);
+  const myP1Move = Field(1);
   const p1choice = Poseidon.hash([myP1Move, myP1Secret]); // rock with a secret of 24
 
   // public state
   let p1State = new rpsState({
     player1Choice: p1choice,
     player2Choice: Field(-1),
-    result: Field(-1),
+    result: Field(100),
   });
 
   // proof
@@ -69,7 +69,7 @@ async function main() {
   });
 
   // proof
-  tic('PROOF 2: p2 chooses paper');
+  tic('PROOF 3: p2 chooses paper');
   const proof3 = await rpsProgram.checkWinner(
     confirmState,
     confirmP1,
@@ -82,4 +82,9 @@ async function main() {
   await shutdown();
 }
 
-main();
+main()
+  .catch(console.error)
+  .then(() => {
+    console.log('Caught some error: compile or proofß Failed');
+    shutdown();
+  });

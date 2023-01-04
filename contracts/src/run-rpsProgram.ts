@@ -85,6 +85,6 @@ async function main() {
 main()
   .catch(console.error)
   .then(() => {
-    console.log('Caught some error: compile or proofß Failed');
+    console.log('Caught some error: compile or proof Failed');
     shutdown();
   });

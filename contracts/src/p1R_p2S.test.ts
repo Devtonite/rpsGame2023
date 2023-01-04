@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { Field, Poseidon, Proof, isReady, shutdown } from 'snarkyjs';
-import { rpsProgram, rpsState } from './rpsProgram.js';
+import { rpsProgram } from './rpsProgram.js';
+import { rpsState } from './rpsHelpers.js';
 
 describe('Player 1 (ROCK) vs Player 2 (SCISSORS)', () => {
   let p1Secret: Field,

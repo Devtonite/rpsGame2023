@@ -7,16 +7,10 @@ import {
   SelfProof,
   Struct,
 } from 'snarkyjs';
-
-export class rpsState extends Struct({
-  player1Choice: Field, // secret fields
-  player2Choice: Field, // field
-  result: Field,
-}) {}
+import { rpsState } from './rpsHelpers';
 
 export const rpsProgram = Experimental.ZkProgram({
   publicInput: rpsState,
-
   methods: {
     p1Move: {
       privateInputs: [Field, Field],

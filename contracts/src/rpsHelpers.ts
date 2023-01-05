@@ -12,7 +12,7 @@ export class moveSet extends Struct({
   Scissors: Field,
 }) {}
 
-export async function compareMoves(p1: Field, p2: Field) {
+export function compareMoves(p1: Field, p2: Field) {
   const winner = Circuit.switch(
     [
       // (moves:) 1: Rock, 2: Paper, 3: Scissors

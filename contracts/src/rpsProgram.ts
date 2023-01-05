@@ -1,13 +1,6 @@
 /* eslint-disable */
-import {
-  Circuit,
-  Experimental,
-  Field,
-  Poseidon,
-  SelfProof,
-  Struct,
-} from 'snarkyjs';
-import { rpsState } from './rpsHelpers';
+import { Circuit, Experimental, Field, Poseidon, SelfProof } from 'snarkyjs';
+import { rpsState, compareMoves } from './rpsHelpers';
 
 export const rpsProgram = Experimental.ZkProgram({
   publicInput: rpsState,
@@ -66,22 +59,14 @@ export const rpsProgram = Experimental.ZkProgram({
         publicInput.player1Choice.assertEquals(
           prevProof.publicInput.player1Choice
         );
-        // 2. confirm Field move provided corresponds to current p1 choice
+        // 2. confirm Field move + secret provided corresponds to current p1 choice
         let confirmed = Poseidon.hash([confirmP1Move, secret]);
         publicInput.player1Choice.assertEquals(confirmed);
 
-        // Assert p1 is NOT altering the move p2 provided:
+        // Assert p1 is NOT altering the move p2 selected from previous proof:
         confirmP2Move.assertEquals(prevProof.publicInput.player2Choice);
 
-        // TODO: compare publicInput.player2choice with confirmMove & secret
-        let theWinner = Circuit.if(
-          // if p1 = rock and p2 = paper,
-          confirmP1Move.equals(Field(1)).and(confirmP2Move.equals(Field(2))),
-          // p2 wins
-          Field(2),
-          // else assume p2 = scissors and p1 wins
-          Field(1)
-        );
+        let theWinner = compareMoves(confirmP1Move, confirmP2Move);
         publicInput.result.assertEquals(theWinner);
       },
     },
